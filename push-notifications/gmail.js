@@ -28,11 +28,11 @@ function setupPushNotifications(token) {
     },
     (err, res) => {
       if (err) {
-        console.log(err);
+        console.log("gmail push up error");
         return;
       }
 
-      console.log("Push notification set up successfully", res);
+      console.log("New email received", res);
     }
   );
 }
