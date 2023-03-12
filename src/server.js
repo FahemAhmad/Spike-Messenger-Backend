@@ -94,19 +94,8 @@ app.use("/meet", meetRouter);
 app.use("/chat", chatRouter);
 
 app.post("/setup-push-notifications", (req, res) => {
-  res.status(201).send("New email recieved", req);
-  // const data = req.body.message.data;
-  // const decodedData = Buffer.from(data, "base64").toString();
-  // console.log("Received notification:", decodedData);
-
-  // // Parse the notification
-  // const notification = google.gmail_v1.users.messages.parseHistory({
-  //   history: JSON.parse(decodedData),
-  // });
-  // const message = notification.messages[0];
-
-  // // Handle the notification
-  // console.log("Message:", message);
+  console.log("req", req);
+  res.status(201).send("New email recieved");
 });
 
 // Error handler
