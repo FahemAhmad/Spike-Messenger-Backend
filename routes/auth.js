@@ -116,27 +116,6 @@ router.post("/callback", async (req, res) => {
       }
     });
 
-    const options = {
-      url: "http://localhost:4000/webhook",
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        // add your notification payload here
-        title: "New message",
-        body: "You have a new message in your inbox",
-      },
-    };
-
-    axios(options)
-      .then((res) => {
-        console.log(`Push notification sent with status code ${res.status}`);
-      })
-      .catch((err) => {
-        console.error(`Error sending push notification: ${err.message}`);
-      });
-
     res.json({ access_token, expiry_date, refresh_token });
   } catch (error) {
     console.error(error);
