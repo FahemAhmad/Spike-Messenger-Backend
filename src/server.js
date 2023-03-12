@@ -93,7 +93,7 @@ app.use("/events", eventRouter);
 app.use("/meet", meetRouter);
 app.use("/chat", chatRouter);
 
-app.post("/setup-push-notification", (req, res) => {
+app.post("/setup-push-notifications", (req, res) => {
   res.status(201).send("New email recieved", req);
   // const data = req.body.message.data;
   // const decodedData = Buffer.from(data, "base64").toString();
