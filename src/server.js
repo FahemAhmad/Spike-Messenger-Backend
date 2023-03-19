@@ -1,11 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
+const http = require("http");
 const cors = require("cors");
 const { google } = require("googleapis");
 const app = express();
 require("dotenv").config();
-const gmail = google.gmail({ version: "v1" });
-const credentials = require("../credentials.json");
+
+const initSocketIO = require("../helpers/socketio");
 
 // Middlewares
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
@@ -24,16 +25,25 @@ const tasksRouter = require("../routes/tasks");
 const eventRouter = require("../routes/events");
 const meetRouter = require("../routes/meet");
 const chatRouter = require("../routes/chat");
+const contactsRouter = require("../routes/contact");
+const authenticateToken = require("../helpers/AuthenticateToken");
 // Apply authentication middleware to all routes in emailsRouter except /google-auth
 
 // Routes
 app.use("/google-auth", authRouter);
-app.use("/emails", emailsRouter);
+app.use("/emails", authenticateToken, emailsRouter);
 app.use("/notes", notesRouter);
 app.use("/tasks", tasksRouter);
 app.use("/events", eventRouter);
 app.use("/meet", meetRouter);
 app.use("/chat", chatRouter);
+app.use("/contacts", authenticateToken, contactsRouter);
+
+const server = http.createServer(app);
+
+// ... other middleware and routes ...
+
+initSocketIO(server);
 
 app.post("/setup-push-notifications", async (req, res) => {
   try {
@@ -41,28 +51,7 @@ app.post("/setup-push-notifications", async (req, res) => {
     const decodedData = Buffer.from(data, "base64").toString();
     console.log("Received notification:", decodedData);
 
-    // Parse the notification
-    const notification = google.gmail_v1.users.messages.parseHistory({
-      history: JSON.parse(decodedData),
-    });
-    const message = notification.messages[0];
-
-    // Retrieve the message using the Gmail API
-    const auth = new google.auth.OAuth2({
-      keyFile: credentials,
-      scopes: "https://www.googleapis.com/auth/gmail.readonly",
-    });
-    const gmail = google.gmail({ version: "v1", auth });
-
-    const response = await gmail.users.messages.get({
-      userId: "me",
-      id: message.id,
-    });
-
-    const email = response.data;
-    console.log("Email:", email);
-
-    res.status(201).send("New email received");
+    res.status(201).send("Message delivered successfully.");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error processing notification");
